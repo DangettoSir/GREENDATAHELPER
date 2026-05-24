@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КОД 09.02.07-2-2026 | GreenData Чеклист</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0f11;
+    --surface: #141618;
+    --surface2: #1c1f23;
+    --border: #252a30;
+    --border2: #2e3540;
+    --text: #e8edf2;
+    --text2: #8a9ab0;
+    --text3: #5a6a7a;
+    --bu: #00c896;
+    --bu-dim: rgba(0,200,150,0.12);
+    --pu: #5b8fff;
+    --pu-dim: rgba(91,143,255,0.12);
+    --easy: #22c45a;
+    --easy-dim: rgba(34,196,90,0.1);
+    --mid: #f59e0b;
+    --mid-dim: rgba(245,158,11,0.1);
+    --hard: #ef4444;
+    --hard-dim: rgba(239,68,68,0.1);
+    --warn: #fbbf24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 32px 24px;
+    min-width: 900px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 28px; gap: 24px;
+  }
+  .header-left {}
+  .header-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .header-sub {
+    font-size: 12px; color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .header-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .hbadge {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+    padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
+  }
+  .hb-bu { background: var(--bu-dim); color: var(--bu); border: 1px solid rgba(0,200,150,0.3); }
+  .hb-pu { background: var(--pu-dim); color: var(--pu); border: 1px solid rgba(91,143,255,0.3); }
+
+  /* LEGEND */
+  .legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* SECTION */
+  .section { margin-bottom: 8px; }
+  .section-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    border-radius: 10px 10px 0 0;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer; user-select: none;
+  }
+  .sh-bu {
+    background: linear-gradient(90deg, rgba(0,200,150,0.15) 0%, rgba(0,200,150,0.04) 100%);
+    border: 1px solid rgba(0,200,150,0.25); color: var(--bu);
+  }
+  .sh-pu {
+    background: linear-gradient(90deg, rgba(91,143,255,0.15) 0%, rgba(91,143,255,0.04) 100%);
+    border: 1px solid rgba(91,143,255,0.25); color: var(--pu);
+  }
+  .section-arrow { margin-left: auto; transition: transform 0.2s; font-size: 10px; }
+  .section-head.collapsed .section-arrow { transform: rotate(-90deg); }
+
+  .section-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+
+  /* TABLE */
+  .tbl-wrap {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th {
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 9px; font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 12px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+  .col-n { width: 3%; text-align: center; color: var(--text3); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .col-req { width: 20%; }
+  .col-path { width: 27%; }
+  .col-how { width: 32%; }
+  .col-hard { width: 10%; }
+  .col-pts { width: 8%; text-align: center; }
+
+  .req-name { font-weight: 600; font-size: 13px; color: var(--text); }
+  .req-note { font-size: 11px; color: var(--text3); margin-top: 3px; font-style: italic; }
+
+  /* Path pill */
+  .path-chain {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .path-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text2);
+    line-height: 1.4;
+  }
+  .path-arrow { color: var(--text3); font-size: 9px; }
+  .path-doc { font-size: 10px; color: var(--text3); margin-top: 3px; font-style: italic; }
+  .path-doc a { color: var(--pu); text-decoration: none; }
+  .path-doc a:hover { text-decoration: underline; }
+
+  .how-text { font-size: 12px; color: var(--text2); line-height: 1.55; }
+  .how-step { display: flex; gap: 6px; margin-top: 4px; }
+  .how-num {
+    flex-shrink: 0;
+    width: 16px; height: 16px;
+    background: var(--border2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600; color: var(--text3);
+    margin-top: 2px;
+  }
+  .how-txt { font-size: 11.5px; color: var(--text2); line-height: 1.5; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 600; white-space: nowrap;
+  }
+  .b-easy { background: var(--easy-dim); color: var(--easy); border: 1px solid rgba(34,196,90,0.3); }
+  .b-mid  { background: var(--mid-dim);  color: var(--mid);  border: 1px solid rgba(245,158,11,0.3); }
+  .b-hard { background: var(--hard-dim); color: var(--hard); border: 1px solid rgba(239,68,68,0.3); }
+
+  .pts {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    color: var(--text);
+  }
+
+  /* SUMMARY */
+  .summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 24px;
+  }
+  .sum-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .sum-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .sum-val { font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700; }
+  .sv-bu { color: var(--bu); }
+  .sv-pu { color: var(--pu); }
+  .sv-hard { color: var(--hard); }
+  .sv-mid  { color: var(--mid); }
+
+  /* WARNINGS */
+  .warnings {
+    background: var(--surface);
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+  }
+  .warn-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 10px; font-weight: 700;
+    color: var(--warn); text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .warn-item {
+    display: flex; gap: 10px; margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .warn-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .warn-num {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; color: var(--warn);
+    margin-top: 1px;
+  }
+  .warn-body { font-size: 12px; color: var(--text2); line-height: 1.55; }
+  .warn-body strong { color: var(--text); font-weight: 600; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* IMPORT NOTE */
+  .import-note {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 11px;
+    margin-top: 6px;
+    font-size: 11px; color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Collapsible */
+  .tbl-body { transition: max-height 0.3s ease; overflow: hidden; }
+  .tbl-body.collapsed { display: none; }
+
+  /* Row type highlight */
+  tr.row-hard td:first-child { border-left: 2px solid var(--hard); }
+  tr.row-mid  td:first-child { border-left: 2px solid var(--mid); }
+  tr.row-easy td:first-child { border-left: 2px solid transparent; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-title">КОД 09.02.07-2-2026 — GreenData Чеклист</div>
+    <div class="header-sub">ООО «Обувь» · Демонстрационный Экзамен 2026 · Все пути из официальной вики docs.greendata.ru</div>
+    <div class="header-badges">
+      <span class="hbadge hb-bu">Базовый уровень</span>
+      <span class="hbadge hb-pu">Профессиональный уровень</span>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <span class="leg"><span class="leg-dot" style="background:var(--easy)"></span>Легко на GreenData</span>
+  <span class="leg"><span class="leg-dot" style="background:var(--mid)"></span>Средняя сложность</span>
+  <span class="leg"><span class="leg-dot" style="background:var(--hard)"></span>Сложно / нет прямого аналога</span>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="sum-card">
+    <div class="sum-label">Базовый уровень</div>
+    <div class="sum-val sv-bu">~58 б.</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-label">+ Профессиональный</div>
+    <div class="sum-val sv-pu">+44 б.</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-label">Сложных требований</div>
+    <div class="sum-val sv-hard">3 из 22</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-label">Средней сложности</div>
+    <div class="sum-val sv-mid">5 из 22</div>
+  </div>
+</div>
+
+<!-- ============ БАЗОВЫЙ УРОВЕНЬ ============ -->
+<div class="section">
+  <div class="section-head sh-bu" onclick="toggle(this)">
+    <span>Базовый уровень (ДЭ БУ)</span>
+    <span class="section-score">12 требований</span>
+    <span class="section-arrow">▾</span>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-body">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-n">#</th>
+          <th class="col-req">Требование</th>
+          <th class="col-path">Точный путь в GreenData + Документация</th>
+          <th class="col-how">Что делать</th>
+          <th class="col-hard">Сложность</th>
+          <th class="col-pts">Баллы</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="row-easy">
+          <td class="col-n">1</td>
+          <td>
+            <div class="req-name">Предметная область</div>
+            <div class="req-note">Структура данных: Товар, Пользователь, Заказ, Пункт выдачи + связи</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Предметные области</div>
+              <div class="path-pill">→ [Создать с нуля] <span class="path-arrow">→</span> Добавить типы объектов</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/subject-area.html">subject-area.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать предметную область «Обувь»</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Внутри создать 4 типа объектов: Товар, Пользователь, Заказ, Пункт выдачи</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Связать стрелками: Заказ→Товар (ассоциация), Заказ→Пользователь, Заказ→ПунктВыдачи</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">ER-диаграмма готова — экспорт в PNG/PDF кнопкой экспорта</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">8</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">2</td>
+          <td>
+            <div class="req-name">Создание типов объектов</div>
+            <div class="req-note">Атрибуты из Excel-файлов: Tovar, user_import, Заказ, Пункты_выдачи</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов</div>
+              <div class="path-pill">→ [Создать] → заполнить Наименование + Наим. таблицы</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-new-object-types.html">creating-new-object-types.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Для каждого типа указать Наименование (рус) и Наименование таблицы (лат, ≤23 символа)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Добавить атрибуты по структуре Excel: строка, число, дата, объектная ссылка</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Сначала создать Товар и Пункт выдачи (справочники), потом Заказ (ссылается на них)</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">3</td>
+          <td>
+            <div class="req-name">Импорт данных из Excel</div>
+            <div class="req-note">Загрузка 4 файлов: Tovar.xlsx, user_import.xlsx, Заказ_import.xlsx, Пункты_выдачи_import.xlsx</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов</div>
+              <div class="path-pill">→ [тип объекта] → Шаблон загрузки xls-файлов <span class="path-arrow">→</span> Редактор Excel шаблона</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/excel_loader.html">excel_loader.html</a> (рекомендуемый метод)</div>
+            <div class="import-note">⚠ Устаревший метод: configuring-data-import-from-xls-files.html</div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать шаблон типа «Шаблон загрузки xls-файлов для типов объектов» [SYS_XLS_TEMPLATE]</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Загрузить Excel-файл в Редактор → сопоставить столбцы с атрибутами объекта</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Настроить кнопку-действие «Загрузка локальных объектов из Excel» на форме реестра</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Повторить для каждого из 4 файлов. ⚠ Заказ_import: поле «Артикул» может содержать несколько значений — проверить при маппинге</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">6</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">4</td>
+          <td>
+            <div class="req-name">Ролевая модель (4 роли)</div>
+            <div class="req-note">Гость (аноним), Авт. клиент, Менеджер, Администратор</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление доступом <span class="path-arrow">→</span> Группы доступа</div>
+              <div class="path-pill">→ [Создать] → задать Наименование группы</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-access-groups.html">creating-access-groups.html</a> · <a href="https://docs.greendata.ru/platform/ru/general-procedure-for-role-model.html">general-procedure-for-role-model.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать группы: «Клиент», «Менеджер», «Администратор» (Гость = системный аноним)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Создать пользователей из user_import.xlsx через Администрирование → Управление доступом → Пользователи</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Включить каждого пользователя в нужную группу на вкладке «Пользователи, включённые в группу»</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">8</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">5</td>
+          <td>
+            <div class="req-name">Экран авторизации + кнопка «Гость»</div>
+            <div class="req-note">Страница входа с логином/паролем. Доступ как аноним без авторизации</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Меню профиля пользователя <span class="path-arrow">→</span> Управление приложением <span class="path-arrow">→</span> Конструктор страницы входа</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/login-page-constructor.html">login-page-constructor.html</a> · <a href="https://docs.greendata.ru/platform/ru/anonymous-user.html">anonymous-user.html</a></div>
+            <div class="path-doc">Аноним вход: <a href="https://docs.greendata.ru/platform/ru/system-settings.html">Системные настройки → Дополнительно → Анонимный вход ✓</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">В Конструкторе страницы входа настроить: логотип, фон, шрифт, цвета кнопки</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">В разделе «Авторизация» → включить «Анонимный вход» — появится кнопка входа без логина</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Выдать группе «Аноним (Группа доступа)» права только на чтение реестра Товаров: Администрирование → Управление доступом → Доступ к объектам системы</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">7</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">6</td>
+          <td>
+            <div class="req-name">Просмотр товаров (Гость / Клиент)</div>
+            <div class="req-note">Только просмотр, БЕЗ фильтрации, сортировки, поиска</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов <span class="path-arrow">→</span> Товар</div>
+              <div class="path-pill">→ Открыть реестр → Кнопка «Настройка реестра» (шестерёнка)</div>
+              <div class="path-pill">→ вкладка «Фильтрация и поисковые фильтры» → Вид фильтрации: <b>Без фильтрации</b></div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/tab_filters_and_search_filters.html">tab_filters_and_search_filters.html</a> · <a href="https://docs.greendata.ru/platform/ru/configuring-the-registry-visual.html">configuring-the-registry-visual.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать отдельный базовый реестр для ролей Гость/Клиент</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Вкладка «Фильтрация и поисковые фильтры» → Вид фильтрации: «Без фильтрации»</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Вкладка «Панель управления» → скрыть кнопки создания/удаления</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Ограничить доступ через права: только чтение экземпляров для групп Гость/Клиент</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">7</td>
+          <td>
+            <div class="req-name">Просмотр товаров (Менеджер / Админ)</div>
+            <div class="req-note">С фильтрацией, сортировкой, поиском</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">→ Настройка реестра Товар → вкладка «Фильтрация и поисковые фильтры»</div>
+              <div class="path-pill">→ Вид фильтрации: <b>Excel</b> + Отображать поисковые фильтры: <b>Вкл</b></div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/tab_filters_and_search_filters.html">tab_filters_and_search_filters.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Вид фильтрации колонок: «Excel» (множественный выбор как в XLSX)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">«Отображать поисковые фильтры» → Вкл → настроить поля: Категория, Поставщик, Скидка, Наименование</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Сортировка работает автоматически по клику на заголовок колонки</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">8</td>
+          <td>
+            <div class="req-name">Просмотр заказов (Менеджер)</div>
+            <div class="req-note">Только чтение без создания/удаления</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление доступом <span class="path-arrow">→</span> Доступ к объектам системы</div>
+              <div class="path-pill">→ Тип объекта: Заказ → Группа «Менеджер» → только <b>IR (Чтение экземпляров)</b></div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/access_permission_values_explanation.html">access_permission_values_explanation.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">В матрице прав для типа «Заказ» → Менеджер: поставить галку только IR (Чтение экземпляров типа)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Кнопки «Создать» и «Удалить» автоматически не отображаются при отсутствии прав IC/ID</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">9</td>
+          <td>
+            <div class="req-name">CRUD Товаров (Администратор)</div>
+            <div class="req-note">Просмотр / Создание / Редактирование / Удаление</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Типы объектов <span class="path-arrow">→</span> Товар <span class="path-arrow">→</span> открыть реестр <span class="path-arrow">→</span> Настройка визуала карточки</div>
+              <div class="path-pill">Права: Администратор → IR + IW + IC + ID на тип Товар</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/setting-up-an-object-visual-of-instance.html">setting-up-an-object-visual-of-instance.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Настроить визуал карточки Товара: все поля (Артикул, Наименование, Цена, Скидка, Производитель, Поставщик, Категория, Кол-во, Фото)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Группа «Администратор»: права IR+IW+IC+ID → кнопки Создать/Редактировать/Удалить появятся автоматически</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">6</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">10</td>
+          <td>
+            <div class="req-name">CRUD Заказов (Администратор)</div>
+            <div class="req-note">Просмотр / Создание / Редактирование / Удаление</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Типы объектов <span class="path-arrow">→</span> Заказ <span class="path-arrow">→</span> Настройка карточки + реестра</div>
+              <div class="path-pill">Права: Администратор → IR + IW + IC + ID на тип Заказ</div>
+            </div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Карточка Заказа: Номер (автонумерация), Дата заказа, Дата доставки, Статус (выпадающий: Новый / Завершён), Пункт выдачи (объект), Клиент (объект), Код получения</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Статус — атрибут типа «Строка» со значениями из справочника или просто текстовое поле с выпадающим списком значений</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">6</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">11</td>
+          <td>
+            <div class="req-name">Цветовой стиль UI + Шрифт</div>
+            <div class="req-note">#FFFFFF основной, #7FFF00 дополнительный, #00FA9A акцент. Шрифт: Times New Roman</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Меню профиля <span class="path-arrow">→</span> Управление приложением <span class="path-arrow">→</span> Настройки оформления</div>
+              <div class="path-pill">→ Пользовательские темы <span class="path-arrow">→</span> [Создать / скопировать] <span class="path-arrow">→</span> Конструктор тем</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/theme-designer.html">theme-designer.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Скопировать системную тему «Материал», открыть в конструкторе</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Шрифт: выбрать Times New Roman из выпадающего списка (если есть — иначе ближайший serif)</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Цвета через color picker: фон форм #FFFFFF, акцент-кнопки #00FA9A, вторичные элементы #7FFF00</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Сохранить тему → установить как тему по умолчанию</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">12</td>
+          <td>
+            <div class="req-name">Логотип + Favicon + Заголовки форм</div>
+            <div class="req-note">Логотип в меню и на странице входа. Иконка во вкладке браузера. Заголовок на каждой форме</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Конструктор тем <span class="path-arrow">→</span> Приложение <span class="path-arrow">→</span> «Логотип страницы загрузки» + «Фавикон»</div>
+              <div class="path-pill">Конструктор тем <span class="path-arrow">→</span> Главное меню <span class="path-arrow">→</span> «Логотип»</div>
+              <div class="path-pill">Конструктор страницы входа <span class="path-arrow">→</span> Компоненты <span class="path-arrow">→</span> Логотип</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/theme-designer.html">theme-designer.html</a> · <a href="https://docs.greendata.ru/platform/ru/login-page-constructor.html">login-page-constructor.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Конструктор тем → Приложение → Загрузить логотип (PNG/JPG, ≤1МБ). <b>Не включать «Растянуть»</b> — сохранить пропорции!</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Там же → Фавикон → загрузить иконку приложения</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Заголовки форм: в каждом реестре кнопка «Настройка реестра» → поле «Наименование» → ввести заголовок (н-р «Список товаров»)</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">3</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ПРОФЕССИОНАЛЬНЫЙ УРОВЕНЬ ============ -->
+<div class="section">
+  <div class="section-head sh-pu" onclick="toggle(this)">
+    <span>Профессиональный уровень (ДЭ ПУ)</span>
+    <span class="section-score">10 требований — дополнительно к базовому</span>
+    <span class="section-arrow">▾</span>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-body">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-n">#</th>
+          <th class="col-req">Требование</th>
+          <th class="col-path">Точный путь в GreenData + Документация</th>
+          <th class="col-how">Что делать</th>
+          <th class="col-hard">Сложность</th>
+          <th class="col-pts">Баллы</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="row-mid">
+          <td class="col-n">13</td>
+          <td>
+            <div class="req-name">Подсветка скидки &gt;15%</div>
+            <div class="req-note">Фон строки #2E8B57 если «Действующая скидка» > 15</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Реестр Товаров <span class="path-arrow">→</span> Настройка реестра <span class="path-arrow">→</span> вкладка «Стили отображения»</div>
+              <div class="path-pill">→ «Алгоритм стилизации» → создать алгоритм типа <b>[SYS_ALG_VIEW]</b></div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/tab_display_styles.html">tab_display_styles.html</a> · <a href="https://docs.greendata.ru/platform/ru/configuring-the-visual-algorithms.html">configuring-the-visual-algorithms.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать алгоритм типа «Алгоритм. Условие для визуала» [SYS_ALG_VIEW]</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Логика if-else: если attr("скидка") > 15 → return "#2E8B57" ; else → return ""</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">В настройках реестра → вкладка «Стили отображения» → поле «Алгоритм стилизации» → выбрать созданный алгоритм</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">⚠ Алгоритм учитывает только поля, добавленные в реестр как колонки! Убедиться что «Скидка» — колонка реестра</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">14</td>
+          <td>
+            <div class="req-name">ER-диаграмма (схема данных)</div>
+            <div class="req-note">Визуальная схема структуры с атрибутами и связями</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Предметные области</div>
+              <div class="path-pill">→ открыть «Обувь» → кнопка Экспорт (PNG/PDF)</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/subject-area.html">subject-area.html</a> — раздел «Экспорт предметной области»</div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Предметная область — это и есть ER-диаграмма в GreenData. Настроить режим отображения: показывать атрибуты + типы связей</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Кнопка «Вписать в экран» → кнопка «Экспорт» → выбрать PNG или PDF</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Приложить экспорт как артефакт к заданию</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-hard">
+          <td class="col-n">15</td>
+          <td>
+            <div class="req-name">Use Case / Диаграмма вариантов использования</div>
+            <div class="req-note">Роли и их доступные действия в системе</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Нет UML Use Case редактора в GreenData</div>
+              <div class="path-pill">Замена: Администрирование <span class="path-arrow">→</span> Управление доступом <span class="path-arrow">→</span> Доступ к объектам системы → скриншот матрицы</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/access_permission_control.html">access_permission_control.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Матрица прав в GreenData — фактический аналог Use Case (роли × действия)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Сделать скриншот настроенной матрицы прав как артефакт</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Если нужна именно диаграмма — нарисовать в draw.io (diagrams.net) бесплатно онлайн и приложить</div></div>
+          </td>
+          <td><span class="badge b-hard">Сложно</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">16</td>
+          <td>
+            <div class="req-name">Бизнес-процесс: смена статуса заказа</div>
+            <div class="req-note">Маршрут: Новый → В обработке → Завершён</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов <span class="path-arrow">→</span> Заказ</div>
+              <div class="path-pill">→ Создание связи БП с типом объекта</div>
+              <div class="path-pill">Отдельный раздел: создать карточку БП → настроить схему BPMN</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-a-business-process-profile.html">creating-a-business-process-profile.html</a> · <a href="https://docs.greendata.ru/platform/ru/creating-a-relation-between-a-business-process-and-an-object-type.html">creating-a-relation-between-a-business-process-and-an-object-type.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать карточку бизнес-процесса «Обработка заказа»</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">В BPMN-редакторе нарисовать схему: Start → Задача «Принять заказ» (Менеджер) → Задача «Завершить» (Администратор) → End</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">В сервисных задачах добавить действие «ДО. Сервис. Установить значение атрибута» → менять поле «Статус»</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Создать связь БП с типом объекта «Заказ» через «Создание связи между БП и типом объекта»</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">6</span></td>
+        </tr>
+
+        <tr class="row-hard">
+          <td class="col-n">17</td>
+          <td>
+            <div class="req-name">Алгоритм / Блок-схема</div>
+            <div class="req-note">Описание логики модуля (авторизация, обработка скидки, статус заказа)</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов <span class="path-arrow">→</span> [тип]</div>
+              <div class="path-pill">→ Алгоритмы → Создать алгоритм ([SYS_ALG_CARD])</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-an-algorithm.html">creating-an-algorithm.html</a> · <a href="https://docs.greendata.ru/platform/ru/algorithms.html">algorithms.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Алгоритм в GreenData (с отладчиком и точками останова) — аналог блок-схемы в рамках платформы</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Создать алгоритм для проверки скидки >15% или расчёта статуса</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">BPMN-схема бизнес-процесса из п.16 — это и есть блок-схема. Сослаться на неё</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Если нужна классическая блок-схема — draw.io + приложить как документацию</div></div>
+          </td>
+          <td><span class="badge b-hard">Сложно</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">18</td>
+          <td>
+            <div class="req-name">Аналитическая панель / Дашборд</div>
+            <div class="req-note">Статистика: заказы по статусам, остатки товаров, топ товаров</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">В главном меню: создать пункт меню типа «Дашборд»</div>
+              <div class="path-pill">→ Настройка дашборда → добавить аналитические панели (Drag&Drop)</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/analytical-dashboards.html">analytical-dashboards.html</a> · <a href="https://docs.greendata.ru/platform/ru/setting-up-dashboard-set-by-step.html">setting-up-dashboard-set-by-step.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать дашборд → добавить панели: «Структурная диаграмма» (заказы по статусам), «Таблица» (остатки), «КПЭ» (общее кол-во заказов)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Источник данных каждой панели → привязать к типу объекта «Заказ» / «Товар»</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Настроить доступ к дашборду через права на пункт меню</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">6</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">19</td>
+          <td>
+            <div class="req-name">Печатная форма заказа</div>
+            <div class="req-note">Документ: номер, товары, клиент, пункт выдачи, код получения → PDF</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Администрирование <span class="path-arrow">→</span> Управление объектами <span class="path-arrow">→</span> Типы объектов <span class="path-arrow">→</span> Заказ</div>
+              <div class="path-pill">→ реестр типа «Шаблон печатной формы» → Создать</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-print-form-template-profile.html">creating-print-form-template-profile.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Подготовить шаблон в MS Word с именованными закладками: {{НомерЗаказа}}, {{Товары}}, {{ФИО}}, {{АдресПВЗ}}, {{КодПолучения}}</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Создать карточку шаблона: Базовый тип = «Заказ», «Конвертировать в PDF» = Да, загрузить .docx-файл</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">На вкладке «Закладки» привязать каждую закладку к атрибуту типа «Заказ»</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">На вкладке «Привязанные типы» связать шаблон с типом «Заказ» → кнопка формирования ПФ появится на карточке заказа</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">5</span></td>
+        </tr>
+
+        <tr class="row-hard">
+          <td class="col-n">20</td>
+          <td>
+            <div class="req-name">Версионирование / Контроль версий</div>
+            <div class="req-note">Перенос изменений между версиями приложения (аналог Git)</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Нет Git в GreenData</div>
+              <div class="path-pill">Замена: Администрирование <span class="path-arrow">→</span> Обновления <span class="path-arrow">→</span> Создание обновлений посредством Мастера</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-updates-via-the-wizard.html">creating-updates-via-the-wizard.html</a> · <a href="https://docs.greendata.ru/platform/ru/update-system.html">update-system.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">GreenData использует систему *.guf-файлов обновлений — аналог версионных пакетов</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">После завершения каждого этапа: Администрирование → Обновления → Мастер → добавить изменённые объекты → создать .guf-файл</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Вести changelog.md вручную: версия / дата / описание изменений → приложить как документацию проекта</div></div>
+          </td>
+          <td><span class="badge b-hard">Сложно</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-mid">
+          <td class="col-n">21</td>
+          <td>
+            <div class="req-name">Тестирование модулей</div>
+            <div class="req-note">Проверка прав доступа, CRUD, фильтрации, бизнес-процессов</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Нет отдельного модуля тестирования</div>
+              <div class="path-pill">Отладчик: [тип] <span class="path-arrow">→</span> Алгоритмы <span class="path-arrow">→</span> Отладчик (точки останова)</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/creating-and-configuring-algorithms.html">creating-and-configuring-algorithms.html</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Ручное тест-прогон: войти под каждой из 4 ролей (Аноним, Клиент, Менеджер, Администратор)</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Проверить: видимость форм, CRUD товаров/заказов, фильтрацию, подсветку скидки, запуск БП, печатную форму</div></div>
+            <div class="how-step"><div class="how-num">3</div><div class="how-txt">Составить таблицу тест-кейсов: Роль | Действие | Ожидаемый результат | Факт | Статус</div></div>
+            <div class="how-step"><div class="how-num">4</div><div class="how-txt">Алгоритмы отлаживать через встроенный отладчик с точками останова</div></div>
+          </td>
+          <td><span class="badge b-mid">Средне</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+        <tr class="row-easy">
+          <td class="col-n">22</td>
+          <td>
+            <div class="req-name">Навигация / Главное меню</div>
+            <div class="req-note">Пункты меню для каждой роли: Товары, Заказы, Дашборд</div>
+          </td>
+          <td>
+            <div class="path-chain">
+              <div class="path-pill">Меню профиля <span class="path-arrow">→</span> Управление приложением <span class="path-arrow">→</span> Главное меню</div>
+              <div class="path-pill">→ Создать пункты меню → привязать к реестрам/дашборду</div>
+            </div>
+            <div class="path-doc">📄 <a href="https://docs.greendata.ru/platform/ru/main-menu-settings.html">main-menu-settings.html</a> · <a href="https://docs.greendata.ru/platform/ru/configuring-permissions-for-visibility-of-a-menu-item.html">права на пункты меню</a></div>
+          </td>
+          <td>
+            <div class="how-step"><div class="how-num">1</div><div class="how-txt">Создать пункты меню: «Товары», «Заказы», «Пункты выдачи», «Аналитика»</div></div>
+            <div class="how-step"><div class="how-num">2</div><div class="how-txt">Для каждого пункта меню настроить видимость по ролям через Администрирование → Управление доступом → Доступ к объектам системы → тип «Меню»</div></div>
+          </td>
+          <td><span class="badge b-easy">Легко</span></td>
+          <td class="col-pts"><span class="pts">4</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- WARNINGS -->
+<div class="warnings">
+  <div class="warn-title">⚠ Критические замечания</div>
+
+  <div class="warn-item">
+    <div class="warn-num">1</div>
+    <div class="warn-body">
+      <strong>Импорт Excel (задание №3)</strong> — рекомендуемый метод <span class="mono">excel_loader.html</span>, а не старый <span class="mono">configuring-data-import-from-xls-files.html</span>. Старый метод «не развивается». В файле Заказ_import.xlsx поле «Артикул» может содержать несколько значений через запятую — разобрать вручную до импорта или через алгоритм.
+    </div>
+  </div>
+
+  <div class="warn-item">
+    <div class="warn-num">2</div>
+    <div class="warn-body">
+      <strong>Шрифт Times New Roman (задание №11)</strong> — в Конструкторе тем есть выпадающий список шрифтов. Если Times New Roman в нём отсутствует (зависит от развёртывания), выбрать ближайший serif. Зафиксировать как ограничение платформы в пояснительной записке.
+    </div>
+  </div>
+
+  <div class="warn-item">
+    <div class="warn-num">3</div>
+    <div class="warn-body">
+      <strong>Алгоритм стилизации (задание №13)</strong> — алгоритм работает ТОЛЬКО если поле «Действующая скидка» добавлено в реестр как видимая колонка. Без этого подсветка не сработает даже при правильном коде алгоритма.
+    </div>
+  </div>
+
+  <div class="warn-item">
+    <div class="warn-num">4</div>
+    <div class="warn-body">
+      <strong>Кнопка «Войти как гость» (задание №5)</strong> — в Конструкторе страницы входа раздел «Авторизация» → включить «Анонимный вход». Эта настройка синхронизируется с Системными настройками → Дополнительно → «Анонимный вход». Анонимному пользователю отдельно выдать права через <span class="mono">Администрирование → Управление доступом → Доступ к объектам системы</span> на объект «Аноним (Группа доступа)».
+    </div>
+  </div>
+
+  <div class="warn-item">
+    <div class="warn-num">5</div>
+    <div class="warn-body">
+      <strong>Логотип (задание №12)</strong> — в Конструкторе тем для логотипа главного меню блок 316×43 px, края большего изображения обрезаются. Для страницы входа — блок 132×70 px. <strong>Не включать «Растянуть по ширине/высоте»</strong> — требование задания: не искажать пропорции!
+    </div>
+  </div>
+
+  <div class="warn-item">
+    <div class="warn-num">6</div>
+    <div class="warn-body">
+      <strong>Use Case и блок-схемы (задания №15, 17)</strong> — GreenData не имеет UML-редактора. Матрица прав = Use Case. BPMN-схема БП = блок-схема. Для классических диаграмм используй <a href="https://app.diagrams.net" style="color:var(--pu)">draw.io онлайн</a> — бесплатно, без регистрации.
+    </div>
+  </div>
+</div>
+
+<script>
+function toggle(head) {
+  head.classList.toggle('collapsed');
+  const body = head.nextElementSibling.querySelector('.tbl-body');
+  body.classList.toggle('collapsed');
+}
+</script>
+
+</body>
+</html>
